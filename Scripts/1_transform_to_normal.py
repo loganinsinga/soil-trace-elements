@@ -1,5 +1,18 @@
-"""Module that transforms the predictor variables
-to make distributions more normal."""
+"""
+Title: Transform to Normal
+Version: 1.0
+Date: 29 April 2024
+Author: Logan Insinga
+Depends:
+    numpy           1.26.4
+    openpyxl        3.1.2
+    pandas          2.2.2
+    scipy           1.13.0
+
+Description:
+The first script in the series for the soil trace elements work. 
+Transforms the predictor variables to make distributions more normal.
+"""
 
 import os
 import sys
@@ -10,7 +23,7 @@ from scipy import stats
 from datetime import date
 
 # define the location of the master table and where the results should be written
-MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements\European_mastertable_trimmed_V2_14April2021.xlsx"
+MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\European_mastertable_trimmed_V2_14April2021.xlsx"
 OUTPUT_DIR = os.path.join(os.path.dirname(MASTER_TABLE_PATH))
 
 PREDICTORS_WITH_NO_FUTURE_COMPONENT = [
