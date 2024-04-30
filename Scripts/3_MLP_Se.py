@@ -1,4 +1,25 @@
-"""3 MLP S"""
+"""
+Title: MLP Selenuim - Model Predictions
+Version: 1.0
+Date: 29 April 2024
+Author: Logan Insinga
+Depends:
+    numpy           1.26.4
+    openpyxl        3.1.2
+    pandas          2.2.2
+    matplotlib      3.8.4
+    scikit-learn    1.4.2
+
+Description:
+Tunes the MLP model for Selenium. 
+Evaluates the best MLP model performance.
+Generates predictions using the optimized model for
+    1. Current
+    2. Future
+    3. Future for each predictor
+    4. Sensitivity analysis
+Writes results to output dir.
+"""
 
 import os
 import sys
@@ -16,7 +37,9 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
 EXECUTION_ID = "run1"
-MASTER_TABLE_PATH = r"C:\Publications\soil trace elements\standardized_master_table.xlsx"
+MASTER_TABLE_PATH = (
+    r"C:\Publications\soil trace elements\standardized_master_table.xlsx"
+)
 OUTPUT_DIR = r"C:\Publications\soil trace elements\3_MLP_Se"
 
 LOGGER = logging.getLogger("my_logger")
@@ -28,7 +51,9 @@ def setup_logging():
 
     log_file_loc = os.path.dirname(MASTER_TABLE_PATH)
 
-    file_handler = logging.FileHandler(f"{log_file_loc}\\3_MLP_S_{EXECUTION_ID}.log", "w")
+    file_handler = logging.FileHandler(
+        f"{log_file_loc}\\3_MLP_S_{EXECUTION_ID}.log", "w"
+    )
     file_handler.setFormatter(logging.Formatter("%(message)s"))
     file_handler.setLevel(logging.DEBUG)  # log file gets everything
     LOGGER.addHandler(file_handler)
@@ -69,8 +94,12 @@ def get_predictors(master_table: pd.DataFrame) -> dict[str, pd.DataFrame]:
             "SeDep_SSP585",
         ]
     ].copy(deep=True)
-    predictors_extreme.dropna(axis=0, inplace=True, how="any")  # remove row if any col is nan
-    extreme_valid_indxs = predictors_extreme.index  # get indexs associted with valid rows
+    predictors_extreme.dropna(
+        axis=0, inplace=True, how="any"
+    )  # remove row if any col is nan
+    extreme_valid_indxs = (
+        predictors_extreme.index
+    )  # get indexs associted with valid rows
 
     # get extreme predictors for each predictor
     # filter to get only extreme predictor rows that are valid
@@ -192,7 +221,11 @@ def tune_model(element_data: pd.Series, predictors_current: pd.DataFrame) -> dic
 
             # split up the data into training and testing subsets
             x_train, x_test, y_train, y_test = train_test_split(
-                predictors_current, element_data, test_size=0.2, random_state=None, shuffle=True
+                predictors_current,
+                element_data,
+                test_size=0.2,
+                random_state=None,
+                shuffle=True,
             )
 
             # create a model using the selected parameters
@@ -233,17 +266,31 @@ def tune_model(element_data: pd.Series, predictors_current: pd.DataFrame) -> dic
             test_rmse_scores[j] = test_rmse
 
         avg_rmse = np.mean(test_rmse_scores)
-        tuning_results_storage[i, :] = np.array([avg_rmse, hidden_layer_sizes, alpha, power_t, beta_1, beta_2, epsilon])
+        tuning_results_storage[i, :] = np.array(
+            [avg_rmse, hidden_layer_sizes, alpha, power_t, beta_1, beta_2, epsilon]
+        )
 
     tuning_results: pd.DataFrame = pd.DataFrame(
         data=tuning_results_storage,
-        columns=["RMSE", "hidden_layer_sizes", "alpha", "power_t", "beta_1", "beta_2", "epsilon"],
+        columns=[
+            "RMSE",
+            "hidden_layer_sizes",
+            "alpha",
+            "power_t",
+            "beta_1",
+            "beta_2",
+            "epsilon",
+        ],
     )
     tuning_results.sort_values(by="RMSE", ascending=True, inplace=True)
-    tuning_results.to_csv(os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_tuning_results.csv"), index=False)
+    tuning_results.to_csv(
+        os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_tuning_results.csv"), index=False
+    )
     LOGGER.info("Check output directory for tuning results table.")
 
-    best_parameters: dict = dict(zip(tuning_results.columns.tolist(), tuning_results.iloc[0, :].tolist()))
+    best_parameters: dict = dict(
+        zip(tuning_results.columns.tolist(), tuning_results.iloc[0, :].tolist())
+    )
 
     LOGGER.debug("\nBest hyper parameters:")
     LOGGER.debug(best_parameters)
@@ -251,13 +298,19 @@ def tune_model(element_data: pd.Series, predictors_current: pd.DataFrame) -> dic
     def plot_param_vs_score(param: str):
         fig, ax = plt.subplots()
         ax.plot(tuning_results[param], tuning_results["RMSE"], ".b")
-        ax.plot(tuning_results[param].iloc[0:10], tuning_results["RMSE"].iloc[0:10], ".r")
+        ax.plot(
+            tuning_results[param].iloc[0:10], tuning_results["RMSE"].iloc[0:10], ".r"
+        )
         ax.plot(tuning_results[param].iloc[0], tuning_results["RMSE"].iloc[0], ".c")
         ax.semilogx()
         ax.set_title(param)
         ax.set_xlabel(param)
         ax.set_ylabel("RMSE")
-        fig.savefig(os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_tuning_results_{param}_vs_RMSE.png"))
+        fig.savefig(
+            os.path.join(
+                OUTPUT_DIR, f"{EXECUTION_ID}_tuning_results_{param}_vs_RMSE.png"
+            )
+        )
 
     plot_param_vs_score("hidden_layer_sizes")
     plot_param_vs_score("alpha")
@@ -270,7 +323,9 @@ def tune_model(element_data: pd.Series, predictors_current: pd.DataFrame) -> dic
     return best_parameters
 
 
-def evaluate_model(element_data: pd.Series, predictors_current: pd.DataFrame, best_parameters: dict):
+def evaluate_model(
+    element_data: pd.Series, predictors_current: pd.DataFrame, best_parameters: dict
+):
     """Evaluates model performance"""
     num_iterations = 100
 
@@ -311,7 +366,11 @@ def evaluate_model(element_data: pd.Series, predictors_current: pd.DataFrame, be
     for _ in range(0, num_iterations):
 
         x_train, x_test, y_train, y_test = train_test_split(  # train test spit the data
-            predictors_current, element_data, test_size=0.2, random_state=None, shuffle=True
+            predictors_current,
+            element_data,
+            test_size=0.2,
+            random_state=None,
+            shuffle=True,
         )
 
         estimator.fit(x_train, y_train)
@@ -329,11 +388,14 @@ def evaluate_model(element_data: pd.Series, predictors_current: pd.DataFrame, be
         model_evalutation_results_storage["train_rmse"].append(train_rmse)
         model_evalutation_results_storage["test_rmse"].append(test_rmse)
 
-    model_evalutation_results = pd.DataFrame.from_dict(data=model_evalutation_results_storage, orient="columns")
+    model_evalutation_results = pd.DataFrame.from_dict(
+        data=model_evalutation_results_storage, orient="columns"
+    )
     model_evalutation_results.index.name = "Iteration"
 
     model_evalutation_results.to_csv(
-        os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_model_evaluation_results.csv"), index=True
+        os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_model_evaluation_results.csv"),
+        index=True,
     )
     LOGGER.info("Check the output directory for model performance results.")
 
@@ -342,7 +404,9 @@ def create_sensitivity_matrix(predictors_current: pd.DataFrame) -> np.array:
     """Creates a sensitivy matrix"""
 
     # create a sensitivity matrix with 31 rows for each predictor and columns = num predictors
-    sens_matrix = np.zeros((31 * len(predictors_current.columns), len(predictors_current.columns)))
+    sens_matrix = np.zeros(
+        (31 * len(predictors_current.columns), len(predictors_current.columns))
+    )
 
     # for each column, create 31 rows+
     for i in range(0, len(predictors_current.columns), 1):
@@ -392,7 +456,9 @@ def model_predictions(
     LOGGER.info("\nGenerating model predictions.")
     num_iterations = 100
 
-    lat_lon_current = predictors["current"].reset_index()[["lon", "lat"]].copy(deep=True)
+    lat_lon_current = (
+        predictors["current"].reset_index()[["lon", "lat"]].copy(deep=True)
+    )
     lat_lon_future = predictors["extreme"].reset_index()[["lon", "lat"]].copy(deep=True)
 
     estimator = MLPRegressor(
@@ -436,7 +502,11 @@ def model_predictions(
 
         # train the model on the current data
         x_train, x_test, y_train, y_test = train_test_split(
-            predictors["current"].to_numpy(), element_data.to_numpy(), test_size=0.2, random_state=None, shuffle=True
+            predictors["current"].to_numpy(),
+            element_data.to_numpy(),
+            test_size=0.2,
+            random_state=None,
+            shuffle=True,
         )
         estimator.fit(x_train, y_train)  # fit the model to training data
 
@@ -446,9 +516,15 @@ def model_predictions(
         y_pred_extreme = 10 ** estimator.predict(predictors["extreme"].to_numpy())
         y_pred_extreme_AI = 10 ** estimator.predict(predictors["extreme_AI"].to_numpy())
         y_pred_extreme_ET = 10 ** estimator.predict(predictors["extreme_ET"].to_numpy())
-        y_pred_extreme_precip = 10 ** estimator.predict(predictors["extreme_precip"].to_numpy())
-        y_pred_extreme_Sedep = 10 ** estimator.predict(predictors["extreme_Sedep"].to_numpy())
-        y_pred_extreme_toc = 10 ** estimator.predict(predictors["extreme_toc"].to_numpy())
+        y_pred_extreme_precip = 10 ** estimator.predict(
+            predictors["extreme_precip"].to_numpy()
+        )
+        y_pred_extreme_Sedep = 10 ** estimator.predict(
+            predictors["extreme_Sedep"].to_numpy()
+        )
+        y_pred_extreme_toc = 10 ** estimator.predict(
+            predictors["extreme_toc"].to_numpy()
+        )
         y_pred_sens = 10 ** estimator.predict(sens_matrix)
 
         # score model performance
@@ -482,7 +558,9 @@ def model_predictions(
 
         output = lat_lon.join(other=pred_df, how="left")
         output.set_index(keys=["lon", "lat"], drop=True, inplace=True)
-        output.to_csv(os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_{table_name}.csv"), index=True)
+        output.to_csv(
+            os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_{table_name}.csv"), index=True
+        )
 
     post_process_predictions("pred_current", lat_lon_current)
     post_process_predictions("pred_extreme", lat_lon_future)

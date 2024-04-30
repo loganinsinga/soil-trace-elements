@@ -1,4 +1,25 @@
-"""3 SVR Linear Se"""
+"""
+Title: SVR Linear Selenium - Model Predictions
+Version: 1.0
+Date: 29 April 2024
+Author: Logan Insinga
+Depends:
+    numpy           1.26.4
+    openpyxl        3.1.2
+    pandas          2.2.2
+    matplotlib      3.8.4
+    scikit-learn    1.4.2
+
+Description:
+Tunes the SVR model for Selenium. 
+Evaluates the best SVR model performance.
+Generates predictions using the optimized model for
+    1. Current
+    2. Future
+    3. Future for each predictor
+    4. Sensitivity analysis
+Writes results to output dir.
+"""
 
 import os
 import sys

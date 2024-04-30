@@ -1,4 +1,25 @@
-"""3 MLP S"""
+"""
+Title: MLP Sulfur - Model Predictions
+Version: 1.0
+Date: 29 April 2024
+Author: Logan Insinga
+Depends:
+    numpy           1.26.4
+    openpyxl        3.1.2
+    pandas          2.2.2
+    matplotlib      3.8.4
+    scikit-learn    1.4.2
+
+Description:
+Tunes the MLP model for Sulfur. 
+Evaluates the best MLP model performance.
+Generates predictions using the optimized model for
+    1. Current
+    2. Future
+    3. Future for each predictor
+    4. Sensitivity analysis
+Writes results to output dir.
+"""
 
 import os
 import sys
@@ -15,10 +36,10 @@ from math import sqrt
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
-EXECUTION_ID = "run2"
-MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements\standardized_master_table.xlsx"
+EXECUTION_ID = "run1"
+MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\standardized_master_table.xlsx"
 OUTPUT_DIR = (
-    r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements\3_MLP_S"
+    r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\MLP_S"
 )
 
 LOGGER = logging.getLogger("my_logger")

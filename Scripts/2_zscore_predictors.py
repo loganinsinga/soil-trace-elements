@@ -1,4 +1,15 @@
-"""Z-scores the predictors.
+"""
+Title: Z Score Predictors
+Version: 1.0
+Date: 29 April 2024
+Author: Logan Insinga
+Depends:
+    numpy           1.26.4
+    openpyxl        3.1.2
+    pandas          2.2.2
+
+Description:
+Z-scores the predictors.
 This is known as standardizing the predictor
 variables.
 Standardized data is recommended for 
@@ -18,7 +29,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements\normalized_master_table.xlsx"
+MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\normalized_master_table.xlsx"
 OUTPUT_DIR = os.path.join(os.path.dirname(MASTER_TABLE_PATH))
 
 PREDICTORS_WITH_NO_FUTURE_COMPONENT = [
