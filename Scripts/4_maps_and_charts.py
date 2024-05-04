@@ -1,4 +1,21 @@
-"""MAP MAKING SCRIPT"""
+"""
+Title: Generate Maps and Charts
+Version: 1.0
+Date: 29 April 2024
+Author: Logan Insinga
+Depends:
+    numpy           1.26.4
+    openpyxl        3.1.2
+    pandas          2.2.2
+    matplotlib      3.8.4
+    scikit-learn    1.4.2
+
+Description:
+Generates maps and charts for the predictions of
+a single element and model combination.
+User specifies element, model, execution id, and 
+number of predictions.
+"""
 
 import logging
 import os
@@ -19,12 +36,14 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
 EXECUTION_ID = "run1"
-ELEMENT = "SE"
-MODEL = "MLP"  # used for naming
+ELEMENT = "S"
+MODEL = "SVR"  # used for naming
 FILTER_THRESHOLD = 0.3
-MASTER_TABLE_ORIGINAL = r"C:\Publications\soil trace elements\European_mastertable_trimmed_V2_14April2021.xlsx"
-MODEL_RESULTS_DIR = r"C:\Publications\soil trace elements\3_MLP_Se"
-OUTPUT_DIR = r"C:\Publications\soil trace elements\3_MLP_Se"
+MASTER_TABLE_ORIGINAL = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\European_mastertable_trimmed_V2_14April2021.xlsx"
+MODEL_RESULTS_DIR = (
+    r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\SVR_S"
+)
+OUTPUT_DIR = MODEL_RESULTS_DIR
 NUM_PREDICTIONS = 100
 
 LOGGER = logging.getLogger("my_logger")
