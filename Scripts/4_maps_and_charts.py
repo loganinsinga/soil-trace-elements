@@ -35,7 +35,7 @@ from scipy.spatial import cKDTree as KDTree
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
-EXECUTION_ID = "run1"
+EXECUTION_ID = "run2"
 ELEMENT = "S"
 MODEL = "SVR"  # used for naming
 FILTER_THRESHOLD = 0.3
@@ -64,11 +64,11 @@ l_blue = (0.627, 0.706, 0.745)
 d_blue = (0.275, 0.471, 0.706)
 
 PLOT_INFO = {
-    # "obs_v_pred_bins": [0, 100, 200, 300, 400, 500, 1000],  # S
-    "obs_v_pred_bins": [0, 0.2, 0.3, 0.4, 0.5, 0.6, 100],  # Se
+    "obs_v_pred_bins": [0, 100, 200, 300, 400, 500, 100000],  # S
+    # "obs_v_pred_bins": [0, 0.2, 0.3, 0.4, 0.5, 0.6, 100],  # Se
     "obs_v_pred_colors": [d_brown, l_brown, tan, vl_green, l_green, d_green],
-    # "residuals_bins": [-1000000, -200, -100, 100, 200, 1000000],  # S
-    "residuals_bins": [-100, -0.2, -0.1, 0.1, 0.2, 100],  # Se
+    "residuals_bins": [-1000000, -200, -100, 100, 200, 1000000],  # S
+    # "residuals_bins": [-100, -0.2, -0.1, 0.1, 0.2, 100],  # Se
     "residuals_colors": [d_blue, l_blue, tan, orange, red],
     "perc_res_bins": [-1, -0.2, -0.1, 0.1, 0.2, 1],
     "coeff_var_bins": [0, 0.1, 0.2, 0.3, 1],
@@ -110,9 +110,10 @@ def setup_logging():
 
 
 def import_results() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Imports the model results"""
+    """Imports the model results. Gets the original measured data.
+    Also gets each set of predictions."""
 
-    # read in observed data
+    # read in observed data from the original master table
     observed = pd.read_excel(
         MASTER_TABLE_ORIGINAL, usecols=["lon", "lat", f"Avg_{ELEMENT}"]
     )
@@ -183,7 +184,7 @@ def calculate_percent_change(predictions: pd.DataFrame):
     predictions = calculate_pc(predictions, "extreme_toc_avg")
 
     # calculate std of percent change for standard extreme iterations
-    # read in extreme predictions
+    # read in the full set of extreme predictions
     extreme_pred_temp = pd.read_csv(
         os.path.join(MODEL_RESULTS_DIR, f"{EXECUTION_ID}_pred_extreme.csv")
     )
@@ -196,7 +197,7 @@ def calculate_percent_change(predictions: pd.DataFrame):
     extreme_pred_temp.columns = ["extreme_" + col for col in extreme_pred_temp.columns]
     extreme_pred_temp["has_future_point"] = 1
 
-    # read in the current predictions
+    # read in the full set of current predictions
     current_pred_temp = pd.read_csv(
         os.path.join(MODEL_RESULTS_DIR, f"{EXECUTION_ID}_pred_current.csv"),
     )
@@ -208,7 +209,7 @@ def calculate_percent_change(predictions: pd.DataFrame):
     )
     current_pred_temp.columns = ["current_" + col for col in current_pred_temp.columns]
 
-    # join has future point col to current and trim current data to match future
+    # join "has future point" col to current and trim current data to match future
     current_pred_temp = current_pred_temp.merge(
         right=extreme_pred_temp[["has_future_point"]].copy(deep=True),
         left_index=True,
@@ -225,31 +226,22 @@ def calculate_percent_change(predictions: pd.DataFrame):
     extreme_pred_temp_np = extreme_pred_temp.to_numpy(dtype=float, copy=True)
     current_pred_temp_np = current_pred_temp.to_numpy(dtype=float, copy=True)
 
-    # calcualte percent change for each iteration
+    # calcualte percent change for each model iteration
     perc_change_alliters = (
         (extreme_pred_temp_np - current_pred_temp_np) / current_pred_temp_np * 100
     )
 
-    # calculate percent change for each prediction
-    # extreme_pred_temp: pd.DataFrame = extreme_pred_temp.merge(
-    #     right=predictions[["current_avg"]].copy(deep=True), right_index=True, left_index=True, how="inner"
-    # )
-    # for i in range(NUM_PREDICTIONS):
-    #     extreme_pred_temp[f"extreme_{i}_percchange"] = (
-    #         (extreme_pred_temp[f"extreme_{i}"] - extreme_pred_temp["current_avg"]) / extreme_pred_temp["current_avg"]
-    #     ) * 100
-
+    # convert back to dataframe
     perc_change_alliters_df = pd.DataFrame(
         data=perc_change_alliters,
         index=current_pred_temp.index,
         columns=[f"pc_{i}" for i in range(perc_change_alliters.shape[1])],
     )
+
+    # calculate the std of the % changes for all predictions
     perc_change_alliters_df["extreme_percchange_std"] = perc_change_alliters_df.std(
         axis=1
     )
-
-    # perc_change_cols = [col for col in extreme_pred_temp.columns if "percchange" in col]
-    # extreme_pred_temp["extreme_percchange_std"] = extreme_pred_temp[perc_change_cols].std(axis=1)
 
     extreme_pred_temp.to_csv(
         os.path.join(
@@ -363,15 +355,15 @@ def plot_obs_vs_pred(predictions: pd.DataFrame, grid_info: dict):
 
     # interpolate obs and pred data to grid using griddata
     grid_data1 = griddata(
-        (grid_info["lon_c"], grid_info["lat_c"]),
-        obs,
-        (grid_info["Xi_c"], grid_info["Yi_c"]),
+        points=(grid_info["lon_c"], grid_info["lat_c"]),
+        values=obs,
+        xi=(grid_info["Xi_c"], grid_info["Yi_c"]),
         method="nearest",
     )
     grid_data2 = griddata(
-        (grid_info["lon_c"], grid_info["lat_c"]),
-        pred,
-        (grid_info["Xi_c"], grid_info["Yi_c"]),
+        points=(grid_info["lon_c"], grid_info["lat_c"]),
+        values=pred,
+        xi=(grid_info["Xi_c"], grid_info["Yi_c"]),
         method="nearest",
     )
 
@@ -389,9 +381,10 @@ def plot_obs_vs_pred(predictions: pd.DataFrame, grid_info: dict):
     # specify colorbar information
     bins = PLOT_INFO["obs_v_pred_bins"]  # define bin ranges based on input list
     colors = PLOT_INFO["obs_v_pred_colors"]
+    # create a colormap
     cm = mpl.colors.LinearSegmentedColormap.from_list(
         "pred_vs_obs", colors, N=len(bins)
-    )  # create a colormap
+    )
     norm = mpl.colors.BoundaryNorm(bins, len(bins))
 
     # plot the figure
@@ -453,6 +446,80 @@ def plot_obs_vs_pred(predictions: pd.DataFrame, grid_info: dict):
 
     plt.savefig(
         os.path.join(OUTPUT_DIR, f"{EXECUTION_ID}_{ELEMENT}_predvsobs_{MODEL}.png"),
+        bbox_inches="tight",
+    )
+
+    # plot individual points
+
+    # Create a Cartopy map
+    fig, ax = plt.subplots(
+        ncols=2, figsize=((20, 8)), subplot_kw={"projection": ccrs.PlateCarree()}
+    )
+
+    ax[0].set_extent(
+        [
+            grid_info["min_lon_c"],
+            grid_info["max_lon_c"],
+            grid_info["min_lat_c"],
+            grid_info["max_lat_c"],
+        ],
+        crs=ccrs.PlateCarree(),
+    )
+    ax[0].coastlines("50m")
+    ax[0].add_feature(cfeature.BORDERS, zorder=3)
+
+    obs_lon = obs.index.get_level_values(level="lon").to_numpy()
+    obs_lat = obs.index.get_level_values(level="lat").to_numpy()
+    obs_vals = obs.values
+
+    # Plot individual points
+    sp = ax[0].scatter(
+        obs_lon,
+        obs_lat,
+        c=obs_vals,
+        marker="o",
+        s=30,
+        cmap=cm,
+        norm=norm,
+        transform=ccrs.Geodetic(),
+    )
+
+    ax[1].set_extent(
+        [
+            grid_info["min_lon_c"],
+            grid_info["max_lon_c"],
+            grid_info["min_lat_c"],
+            grid_info["max_lat_c"],
+        ],
+        crs=ccrs.PlateCarree(),
+    )
+    ax[1].coastlines("50m")
+    ax[1].add_feature(cfeature.BORDERS, zorder=3)
+
+    pred_lon = pred.index.get_level_values(level="lon").to_numpy()
+    pred_lat = pred.index.get_level_values(level="lat").to_numpy()
+    pred_vals = pred.values
+
+    ax[1].scatter(
+        pred_lon,
+        pred_lat,
+        c=pred_vals,
+        marker="o",
+        s=30,
+        cmap=cm,
+        norm=norm,
+        transform=ccrs.Geodetic(),
+    )
+
+    fig.subplots_adjust(wspace=0.05)
+    cbar = fig.colorbar(
+        sp, ax=ax.ravel().tolist(), pad=0.02, format="%0.3f", shrink=0.87
+    )
+
+    plt.savefig(
+        os.path.join(
+            OUTPUT_DIR, f"{EXECUTION_ID}_{ELEMENT}_predvsobs_indpoints_{MODEL}.png"
+        ),
         bbox_inches="tight",
     )
 
@@ -1152,18 +1219,15 @@ def lat_lon_grid(lat, lon):
     lon_num = int((max_lon - min_lon) / cell_size)
     lat_num = int((max_lat - min_lat) / cell_size)
 
-    xi = np.linspace(
-        min_lon, max_lon, lon_num
-    )  # create array defining limits for lat lon grid
+    # create array defining limits for lat lon grid
+    xi = np.linspace(min_lon, max_lon, lon_num)
     yi = np.linspace(min_lat, max_lat, lat_num)
 
-    Xi, Yi = np.meshgrid(
-        xi, yi
-    )  # use np.meshgrid create grid, Xi and Yi are now 2D arrays
+    # use np.meshgrid create grid, Xi and Yi are now 2D arrays
+    Xi, Yi = np.meshgrid(xi, yi)
 
-    xi_shift = (
-        Xi - cell_size / 2
-    )  # Subtract 1/2 the grid size from both lon and lat arrays
+    # Subtract 1/2 the grid size from both lon and lat arrays
+    xi_shift = Xi - cell_size / 2
     yi_shift = Yi - cell_size / 2
 
     # Add 1 grid spacing to the right column of lon array and concatenate it as an additional column to the right
