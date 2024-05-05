@@ -35,7 +35,7 @@ from scipy.spatial import cKDTree as KDTree
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
-EXECUTION_ID = "run2"
+EXECUTION_ID = "run1"
 ELEMENT = "S"
 MODEL = "SVR"  # used for naming
 FILTER_THRESHOLD = 0.3
