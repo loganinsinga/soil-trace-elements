@@ -37,10 +37,10 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
 EXECUTION_ID = "run1"
-MASTER_TABLE_PATH = (
-    r"C:\Publications\soil trace elements\standardized_master_table.xlsx"
+MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\standardized_master_table.xlsx"
+OUTPUT_DIR = (
+    r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\MLP_Se"
 )
-OUTPUT_DIR = r"C:\Publications\soil trace elements\3_MLP_Se"
 
 LOGGER = logging.getLogger("my_logger")
 LOGGER.setLevel(logging.DEBUG)

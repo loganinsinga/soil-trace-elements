@@ -36,7 +36,7 @@ from math import sqrt
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
-EXECUTION_ID = "Run2"
+EXECUTION_ID = "Run1"
 MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\standardized_master_table.xlsx"
 OUTPUT_DIR = (
     r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\SVR_S"
