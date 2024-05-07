@@ -35,10 +35,17 @@ pandas          2.2.2
 scipy           1.13.0
 matplotlib      3.8.4
 scikit-learn    1.4.2
-Cartopy         0.22.0
+Cartopy         0.22.0 (the following are dependencies of Cartopy)
+geos            3.8.0
+proj            9.3.1
+pyproj          3.6.1
+pyshp           2.3.1
+shapely         2.0.1
 
+Cartopy is the package use for making maps. It is recommended to use conda (instead of pip)
+to install Cartopy. 
 
-3. Set up your local Python environment
+3. Set up and execute with your local Python environment
 
 ## Usage
 
