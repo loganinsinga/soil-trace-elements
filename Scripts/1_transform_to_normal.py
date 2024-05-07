@@ -23,7 +23,7 @@ from scipy import stats
 from datetime import date
 
 # define the location of the master table and where the results should be written
-MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\European_mastertable_trimmed_V2_14April2021.xlsx"
+MASTER_TABLE_PATH = r"Processing\_0_Master_table.xlsx"
 OUTPUT_DIR = os.path.join(os.path.dirname(MASTER_TABLE_PATH))
 
 PREDICTORS_WITH_NO_FUTURE_COMPONENT = [
@@ -47,7 +47,7 @@ def setup_logging():
     """Sets up logging for documentation"""
 
     file_handler = logging.FileHandler(
-        f"{OUTPUT_DIR}\\1_normalized_master_table.log", "w"
+        f"{OUTPUT_DIR}\\_1_normalized_master_table.log", "w"
     )
     file_handler.setFormatter(logging.Formatter("%(message)s"))
     file_handler.setLevel(logging.DEBUG)  # log file gets everything
@@ -212,7 +212,7 @@ def main():
     master_table = transform_predictors_with_future_component(master_table)
 
     master_table.to_excel(
-        os.path.join(OUTPUT_DIR, "normalized_master_table.xlsx"),
+        os.path.join(OUTPUT_DIR, "_1_normalized_master_table.xlsx"),
         index=True,
     )
 

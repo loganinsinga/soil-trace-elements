@@ -29,8 +29,8 @@ import logging
 import numpy as np
 import pandas as pd
 
-MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\normalized_master_table.xlsx"
-OUTPUT_DIR = os.path.join(os.path.dirname(MASTER_TABLE_PATH))
+NORMALIZED_MASTER_TABLE_PATH = r"Processing\_1_normalized_master_table.xlsx"
+OUTPUT_DIR = os.path.join(os.path.dirname(NORMALIZED_MASTER_TABLE_PATH))
 
 PREDICTORS_WITH_NO_FUTURE_COMPONENT = [
     "Avg_CIA",
@@ -50,7 +50,7 @@ def setup_logging():
     """Sets up logging for documentation"""
 
     file_handler = logging.FileHandler(
-        f"{OUTPUT_DIR}\\2_normalized_master_table.log", "w"
+        f"{OUTPUT_DIR}\\_2_normalized_master_table.log", "w"
     )
     file_handler.setFormatter(logging.Formatter("%(message)s"))
     file_handler.setLevel(logging.DEBUG)  # log file gets everything
@@ -147,14 +147,14 @@ def main():
 
     LOGGER.info("Standardizing the predictors")
 
-    master_table = pd.read_excel(MASTER_TABLE_PATH)
+    master_table = pd.read_excel(NORMALIZED_MASTER_TABLE_PATH)
     master_table.set_index(keys=["lon", "lat"], drop=True, inplace=True)
 
     master_table = z_score_current_predictors(master_table)
     master_table = z_score_future_predictors(master_table)
 
     master_table.to_excel(
-        os.path.join(OUTPUT_DIR, "standardized_master_table.xlsx"),
+        os.path.join(OUTPUT_DIR, "_2_standardized_master_table.xlsx"),
         index=True,
     )
 
