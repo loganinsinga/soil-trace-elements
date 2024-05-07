@@ -37,10 +37,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
 
 EXECUTION_ID = "Run1"
-MASTER_TABLE_PATH = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\standardized_master_table.xlsx"
-OUTPUT_DIR = (
-    r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\SVR_S"
-)
+MASTER_TABLE_PATH = r"Processing\_2_standardized_master_table.xlsx"
+OUTPUT_DIR = r"Processing\_3_SVR_S"
 
 LOGGER = logging.getLogger("my_logger")
 LOGGER.setLevel(logging.DEBUG)
@@ -48,11 +46,8 @@ LOGGER.setLevel(logging.DEBUG)
 
 def setup_logging():
     """Sets up logging for documentation"""
-
-    log_file_loc = os.path.dirname(MASTER_TABLE_PATH)
-
     file_handler = logging.FileHandler(
-        f"{log_file_loc}\\3_SVR_S_{EXECUTION_ID}.log", "w"
+        os.path.join(OUTPUT_DIR, f"_3_SVR_S_{EXECUTION_ID}.log"), "w"
     )
     file_handler.setFormatter(logging.Formatter("%(message)s"))
     file_handler.setLevel(logging.DEBUG)  # log file gets everything

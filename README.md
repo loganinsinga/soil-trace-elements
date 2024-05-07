@@ -28,7 +28,16 @@ The scripts in this repository orgnized into 4 steps of the workflow.
 To use the scripts in this repo, follow these steps:
 
 1. Clone this repository to your local development system
-2. Install the dependences
+2. Install the packages and dependences
+numpy           1.26.4
+openpyxl        3.1.2
+pandas          2.2.2
+scipy           1.13.0
+matplotlib      3.8.4
+scikit-learn    1.4.2
+Cartopy         0.22.0
+
+
 3. Set up your local Python environment
 
 ## Usage

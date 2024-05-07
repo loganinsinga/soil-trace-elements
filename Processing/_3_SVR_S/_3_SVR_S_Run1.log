@@ -1,0 +1,15 @@
+Running machine learning - SVR Sulfur
+Getting predictor datasets
+Tuning the model to get the best combination of hyperparams.
+Check output directory for tuning results table.
+
+Best hyper parameters:
+{'RMSE': 0.13515606265161945, 'C': 0.952750047242729, 'epsilon': 0.0286314954339671}
+Check the output directory for tuning results charts.
+
+Evaluating model performance.
+Check the output directory for model performance results.
+
+Generating model predictions.
+Check the output directory for model prediction output files
+Done!

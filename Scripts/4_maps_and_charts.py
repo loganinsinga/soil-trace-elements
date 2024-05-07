@@ -9,6 +9,7 @@ Depends:
     pandas          2.2.2
     matplotlib      3.8.4
     scikit-learn    1.4.2
+    Cartopy         0.22.0
 
 Description:
 Generates maps and charts for the predictions of
