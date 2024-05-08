@@ -29,6 +29,7 @@ To use the scripts in this repo, follow these steps:
 
 1. Clone this repository to your local development system
 2. Install the packages and dependences
+The scripts require the following packages, although future versions may work also.
 numpy           1.26.4
 openpyxl        3.1.2
 pandas          2.2.2
