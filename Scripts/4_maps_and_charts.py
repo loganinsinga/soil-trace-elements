@@ -37,11 +37,11 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
 EXECUTION_ID = "run1"
-ELEMENT = "S"
+ELEMENT = "SE"
 MODEL = "MLP"  # used for naming
 FILTER_THRESHOLD = 0.3
 MASTER_TABLE_ORIGINAL = r"Processing\_0_Master_table.xlsx"
-MODEL_RESULTS_DIR = r"Processing\_3_MLP_S"
+MODEL_RESULTS_DIR = r"Processing\_3_MLP_Se"
 OUTPUT_DIR = MODEL_RESULTS_DIR
 NUM_PREDICTIONS = 100
 
@@ -63,11 +63,11 @@ l_blue = (0.627, 0.706, 0.745)
 d_blue = (0.275, 0.471, 0.706)
 
 PLOT_INFO = {
-    "obs_v_pred_bins": [0, 100, 200, 300, 400, 500, 100000],  # S
-    # "obs_v_pred_bins": [0, 0.2, 0.3, 0.4, 0.5, 0.6, 100],  # Se
+    # "obs_v_pred_bins": [0, 100, 200, 300, 400, 500, 100000],  # S
+    "obs_v_pred_bins": [0, 0.2, 0.3, 0.4, 0.5, 0.6, 100],  # Se
     "obs_v_pred_colors": [d_brown, l_brown, tan, vl_green, l_green, d_green],
-    "residuals_bins": [-1000000, -200, -100, 100, 200, 1000000],  # S
-    # "residuals_bins": [-100, -0.2, -0.1, 0.1, 0.2, 100],  # Se
+    # "residuals_bins": [-1000000, -200, -100, 100, 200, 1000000],  # S
+    "residuals_bins": [-100, -0.2, -0.1, 0.1, 0.2, 100],  # Se
     "residuals_colors": [d_blue, l_blue, tan, orange, red],
     "perc_res_bins": [-1, -0.2, -0.1, 0.1, 0.2, 1],
     "coeff_var_bins": [0, 0.1, 0.2, 0.3, 1],
