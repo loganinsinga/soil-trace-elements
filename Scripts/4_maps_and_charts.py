@@ -38,10 +38,10 @@ import cartopy.feature as cfeature
 
 EXECUTION_ID = "run1"
 ELEMENT = "S"
-MODEL = "SVR"  # used for naming
+MODEL = "MLP"  # used for naming
 FILTER_THRESHOLD = 0.3
 MASTER_TABLE_ORIGINAL = r"Processing\_0_Master_table.xlsx"
-MODEL_RESULTS_DIR = r"Processing\_3_SVR_S"
+MODEL_RESULTS_DIR = r"Processing\_3_MLP_S"
 OUTPUT_DIR = MODEL_RESULTS_DIR
 NUM_PREDICTIONS = 100
 
