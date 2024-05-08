@@ -40,10 +40,8 @@ EXECUTION_ID = "run1"
 ELEMENT = "S"
 MODEL = "SVR"  # used for naming
 FILTER_THRESHOLD = 0.3
-MASTER_TABLE_ORIGINAL = r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\European_mastertable_trimmed_V2_14April2021.xlsx"
-MODEL_RESULTS_DIR = (
-    r"C:\Users\logan\OneDrive\Documents\Publications\soil trace elements V2\SVR_S"
-)
+MASTER_TABLE_ORIGINAL = r"Processing\_0_Master_table.xlsx"
+MODEL_RESULTS_DIR = r"Processing\_3_SVR_S"
 OUTPUT_DIR = MODEL_RESULTS_DIR
 NUM_PREDICTIONS = 100
 
